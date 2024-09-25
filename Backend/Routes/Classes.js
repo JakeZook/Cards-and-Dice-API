@@ -3,31 +3,28 @@ const router = express.Router();
 const classes = require("../Models/Classes");
 
 router.get("/", (req, res) => {
-	res.json(classes);
-});
+	let results = classes;
 
-router.get("/:name", (req, res) => {
-	const request = req.params.name;
-	const className = request.charAt(0).toUpperCase() + request.slice(1);
-	const foundClass = classes.find(
-		(c) => c.name.toLowerCase() === className.toLowerCase()
-	);
-
-	if (foundClass) {
-		res.json(foundClass);
-	} else {
-		res.status(404).json({ error: `Class ${className} not found` });
+	// Filter by name (case-insensitive)
+	if (req.query.name) {
+		const className =
+			req.query.name.charAt(0).toUpperCase() + req.query.name.slice(1);
+		results = results.filter(
+			(c) => c.name.toLowerCase() === className.toLowerCase()
+		);
 	}
-});
 
-router.get("/id/:id", (req, res) => {
-	const classId = parseInt(req.params.id, 10);
-	const foundClass = classes.find((c) => c.id === classId);
+	// Filter by id
+	if (req.query.id) {
+		const classId = parseInt(req.query.id, 10);
+		results = results.filter((c) => c.id === classId);
+	}
 
-	if (foundClass) {
-		res.json(foundClass);
+	// Check if any results found
+	if (results.length > 0) {
+		res.json(results);
 	} else {
-		res.status(404).json({ error: `Class with ID ${classId} not found` });
+		res.status(404).json({ error: "No classes found matching the criteria" });
 	}
 });
 

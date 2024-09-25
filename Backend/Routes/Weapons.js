@@ -3,93 +3,63 @@ const router = express.Router();
 const weapons = require("../Models/Weapons");
 
 router.get("/", (req, res) => {
-	res.json(weapons);
-});
+	let results = weapons;
 
-router.get("/:name", (req, res) => {
-	const request = req.params.name;
-	const weaponName = request.charAt(0).toUpperCase() + request.slice(1);
-	const foundWeapon = weapons.find(
-		(w) => w.name.toLowerCase() === weaponName.toLowerCase()
-	);
-
-	if (foundWeapon) {
-		res.json(foundWeapon);
-	} else {
-		res.status(404).json({ error: `Weapon ${weaponName} not found` });
+	// Filter by name (case-insensitive)
+	if (req.query.name) {
+		const weaponName =
+			req.query.name.charAt(0).toUpperCase() + req.query.name.slice(1);
+		results = results.filter(
+			(w) => w.name.toLowerCase() === weaponName.toLowerCase()
+		);
 	}
-});
 
-router.get("/id/:id", (req, res) => {
-	const weaponId = parseInt(req.params.id, 10);
-	const foundWeapon = weapons.find((w) => w.id === weaponId);
-
-	if (foundWeapon) {
-		res.json(foundWeapon);
-	} else {
-		res.status(404).json({ error: `Weapon with ID ${weaponId} not found` });
+	// Filter by id
+	if (req.query.id) {
+		const weaponId = parseInt(req.query.id, 10);
+		results = results.filter((w) => w.id === weaponId);
 	}
-});
 
-router.get("/type/:type", (req, res) => {
-	const request = req.params.type;
-	const weaponType = request.charAt(0).toUpperCase() + request.slice(1);
-	const foundWeapons = weapons.filter(
-		(w) => w.type.toLowerCase() === weaponType.toLowerCase()
-	);
-
-	if (foundWeapons.length > 0) {
-		res.json(foundWeapons);
-	} else {
-		res.status(404).json({ error: `Weapons of type ${weaponType} not found` });
+	// Filter by type (case-insensitive)
+	if (req.query.type) {
+		const weaponType =
+			req.query.type.charAt(0).toUpperCase() + req.query.type.slice(1);
+		results = results.filter(
+			(w) => w.type.toLowerCase() === weaponType.toLowerCase()
+		);
 	}
-});
 
-router.get("/damageType/:damageType", (req, res) => {
-	const request = req.params.damageType;
-	const weaponDamageType = request.charAt(0).toUpperCase() + request.slice(1);
-	const foundWeapons = weapons.filter(
-		(w) => w.damageType.toLowerCase() === weaponDamageType.toLowerCase()
-	);
-
-	if (foundWeapons.length > 0) {
-		res.json(foundWeapons);
-	} else {
-		res.status(404).json({
-			error: `Weapons with damage type ${weaponDamageType} not found`,
-		});
+	// Filter by damage type (case-insensitive)
+	if (req.query.damageType) {
+		const weaponDamageType =
+			req.query.damageType.charAt(0).toUpperCase() +
+			req.query.damageType.slice(1);
+		results = results.filter(
+			(w) => w.damageType.toLowerCase() === weaponDamageType.toLowerCase()
+		);
 	}
-});
 
-router.get("/modifier/:modifier", (req, res) => {
-	const request = req.params.modifier;
-	const weaponModifier = request.charAt(0).toUpperCase() + request.slice(1);
-	const foundWeapons = weapons.filter(
-		(w) => w.modifier.toLowerCase() === weaponModifier.toLowerCase()
-	);
-
-	if (foundWeapons.length > 0) {
-		res.json(foundWeapons);
-	} else {
-		res
-			.status(404)
-			.json({ error: `Weapons with modifier ${weaponModifier} not found` });
+	// Filter by modifier (case-insensitive)
+	if (req.query.modifier) {
+		const weaponModifier =
+			req.query.modifier.charAt(0).toUpperCase() + req.query.modifier.slice(1);
+		results = results.filter(
+			(w) => w.modifier.toLowerCase() === weaponModifier.toLowerCase()
+		);
 	}
-});
 
-router.get("/properties/:property", (req, res) => {
-	const request = req.params.property;
-	const weaponProperty = request.charAt(0).toUpperCase() + request.slice(1);
-	const foundWeapons = weapons.filter((w) =>
-		w.properties.includes(weaponProperty)
-	);
+	// Filter by properties (case-insensitive, property may be an array)
+	if (req.query.property) {
+		const weaponProperty =
+			req.query.property.charAt(0).toUpperCase() + req.query.property.slice(1);
+		results = results.filter((w) => w.properties.includes(weaponProperty));
+	}
 
-	if (foundWeapons.length > 0) {
-		res.json(foundWeapons);
+	// Check if any results found
+	if (results.length > 0) {
+		res.json(results);
 	} else {
-		res
-			.status(404)
-			.json({ error: `Weapons with property ${weaponProperty} not found` });
+		res.status(404).json({ error: "No weapons found matching the criteria" });
 	}
 });
 
