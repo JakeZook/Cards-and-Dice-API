@@ -119,6 +119,16 @@ const Armor = [
 		stealthDisadvantage: true,
 		weight: 65,
 	},
+	{
+		id: 13,
+		name: "Shield",
+		type: "Shield",
+		cost: 10,
+		ac: 2,
+		reqStrength: 0,
+		stealthDisadvantage: false,
+		weight: 6,
+	},
 ];
 
 module.exports = Armor;
