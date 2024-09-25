@@ -8,6 +8,9 @@ app.use(express.json());
 
 // Import and use routes
 const diceRoutes = require("./Routes/Dice");
+const classRoutes = require("./Routes/Classes");
+
 app.use("/roll", diceRoutes);
+app.use("/classes", classRoutes);
 
 module.exports = app;
