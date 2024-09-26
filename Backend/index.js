@@ -15,12 +15,16 @@ const armorRoutes = require("./Routes/Armor");
 const classesRoutes = require("./Routes/Classes");
 const monstersRoutes = require("./Routes/Monsters");
 const weaponRoutes = require("./Routes/Weapons");
+const spellsRoutes = require("./Routes/Spells");
+const consumablesRoutes = require("./Routes/Consumables");
 
 app.use("/roll", diceRoutes);
 app.use("/armor", armorRoutes);
 app.use("/classes", classesRoutes);
 app.use("/monsters", monstersRoutes);
 app.use("/weapons", weaponRoutes);
+app.use("/spells", spellsRoutes);
+app.use("/consumables", consumablesRoutes);
 
 // Connect to the database and start server
 const port = process.env.PORT || 3000;
