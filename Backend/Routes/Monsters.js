@@ -1,69 +1,69 @@
 const express = require("express");
 const router = express.Router();
-const monsters = require("../Models/Monsters");
+const Monsters = require("../Models/Monsters");
 
-router.get("/", (req, res) => {
-	let results = monsters;
+// Get all monsters or filter
+router.get("/", async (req, res) => {
+	try {
+		let query = {};
 
-	// Filter by name (case-insensitive)
-	if (req.query.name) {
-		const monsterName =
-			req.query.name.charAt(0).toUpperCase() + req.query.name.slice(1);
-		results = results.filter(
-			(m) => m.name.toLowerCase() === monsterName.toLowerCase()
-		);
-	}
+		// Filter by name (case-insensitive)
+		if (req.query.name) {
+			query.name = new RegExp(req.query.name, "i"); // Case-insensitive regex
+		}
 
-	// Filter by id
-	if (req.query.id) {
-		const monsterId = parseInt(req.query.id, 10);
-		results = results.filter((m) => m.id === monsterId);
-	}
+		// Filter by id
+		if (req.query.id) {
+			query._id = req.query.id;
+		}
 
-	// Filter by type (case-insensitive)
-	if (req.query.type) {
-		const monsterType =
-			req.query.type.charAt(0).toUpperCase() + req.query.type.slice(1);
-		results = results.filter(
-			(m) => m.type.toLowerCase() === monsterType.toLowerCase()
-		);
-	}
+		// Filter by hitDice
+		if (req.query.hitDice) {
+			query.hitDice = req.query.hitDice;
+		}
 
-	// Filter by AC
-	if (req.query.ac) {
-		const monsterAC = parseInt(req.query.ac, 10);
-		results = results.filter((m) => m.ac <= monsterAC);
-	}
+		// Filter by type
+		if (req.query.type) {
+			query.type = req.query.type;
+		}
 
-	// Filter by alignment (case-insensitive)
-	if (req.query.alignment) {
-		const monsterAlignment =
-			req.query.alignment.charAt(0).toUpperCase() +
-			req.query.alignment.slice(1);
-		results = results.filter(
-			(m) => m.alignment.toLowerCase() === monsterAlignment.toLowerCase()
-		);
-	}
+		// Filter by size
+		if (req.query.size) {
+			query.size = req.query.size;
+		}
 
-	// Filter by speed
-	if (req.query.speed) {
-		const monsterSpeed = parseInt(req.query.speed, 10);
-		results = results.filter((m) => m.speed <= monsterSpeed);
-	}
+		// Filter by alignment
+		if (req.query.alignment) {
+			query.alignment = req.query.alignment;
+		}
 
-	// Filter by size (case-insensitive)
-	if (req.query.size) {
-		const monsterSize =
-			req.query.size.charAt(0).toUpperCase() + req.query.size.slice(1);
-		results = results.filter(
-			(m) => m.size.toLowerCase() === monsterSize.toLowerCase()
-		);
-	}
+		// Filter by difficulty
+		if (req.query.difficulty) {
+			query.difficulty = req.query.difficulty;
+		}
 
-	if (results.length > 0) {
-		res.json(results);
-	} else {
-		res.status(404).json({ error: "No monsters found matching the criteria" });
+		// Filter by ac
+		if (req.query.ac) {
+			query.ac = req.query.ac;
+		}
+
+		// Filter by xp
+		if (req.query.xp) {
+			query.xp = req.query.xp;
+		}
+
+		const results = await Monsters.find(query);
+
+		if (results.length > 0) {
+			res.json(results);
+		} else {
+			res
+				.status(404)
+				.json({ error: "No Monsters found matching the criteria" });
+		}
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server Error");
 	}
 });
 

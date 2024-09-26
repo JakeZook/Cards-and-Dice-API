@@ -1,69 +1,62 @@
 const express = require("express");
 const router = express.Router();
-const armor = require("../Models/Armor");
+const Armor = require("../Models/Armor");
 
-router.get("/", (req, res) => {
-	let results = armor;
+// Get all armors or filter
+router.get("/", async (req, res) => {
+	try {
+		let query = {};
 
-	// Filter by name (case-insensitive)
-	if (req.query.name) {
-		const armorName =
-			req.query.name.charAt(0).toUpperCase() + req.query.name.slice(1);
-		results = results.filter(
-			(a) => a.name.toLowerCase() === armorName.toLowerCase()
-		);
-	}
+		// Filter by name (case-insensitive)
+		if (req.query.name) {
+			query.name = new RegExp(req.query.name, "i"); // Case-insensitive regex
+		}
 
-	// Filter by id
-	if (req.query.id) {
-		const armorId = parseInt(req.query.id, 10);
-		results = results.filter((a) => a.id === armorId);
-	}
+		// Filter by id
+		if (req.query.id) {
+			query._id = req.query.id;
+		}
 
-	// Filter by type (case-insensitive)
-	if (req.query.type) {
-		const armorType =
-			req.query.type.charAt(0).toUpperCase() + req.query.type.slice(1);
-		results = results.filter(
-			(a) => a.type.toLowerCase() === armorType.toLowerCase()
-		);
-	}
+		// Filter by type (case-insensitive)
+		if (req.query.type) {
+			query.type = new RegExp(req.query.type, "i"); // Case-insensitive regex
+		}
 
-	// Filter by AC modifier
-	if (req.query.ac) {
-		const armorModifier = parseInt(req.query.ac, 10);
-		results = results.filter((a) => a.ac <= armorModifier);
-	}
+		// Filter by AC modifier
+		if (req.query.ac) {
+			query.ac = { $lte: parseInt(req.query.ac, 10) };
+		}
 
-	// Filter by weight
-	if (req.query.weight) {
-		const armorWeight = parseInt(req.query.weight, 10);
-		results = results.filter((a) => a.weight <= armorWeight);
-	}
+		// Filter by weight
+		if (req.query.weight) {
+			query.weight = { $lte: parseInt(req.query.weight, 10) };
+		}
 
-	// Filter by cost
-	if (req.query.cost) {
-		const armorCost = parseInt(req.query.cost, 10);
-		results = results.filter((a) => a.cost <= armorCost);
-	}
+		// Filter by cost
+		if (req.query.cost) {
+			query.cost = { $lte: parseInt(req.query.cost, 10) };
+		}
 
-	// Filter by required strength
-	if (req.query.str) {
-		const armorStrength = parseInt(req.query.str, 10);
-		results = results.filter((a) => a.reqStrength <= armorStrength);
-	}
+		// Filter by required strength
+		if (req.query.str) {
+			query.reqStrength = { $lte: parseInt(req.query.str, 10) };
+		}
 
-	// Filter by stealth disadvantage
-	if (req.query.stealth) {
-		const armorStealth = req.query.stealth === "true";
-		results = results.filter((a) => a.stealthDisadvantage !== armorStealth);
-	}
+		// Filter by stealth disadvantage
+		if (req.query.stealth) {
+			query.stealthDisadvantage = req.query.stealth === "true";
+		}
 
-	// Check if any results found
-	if (results.length > 0) {
-		res.json(results);
-	} else {
-		res.status(404).json({ error: "No armor found matching the criteria" });
+		const results = await Armor.find(query);
+
+		if (results.length > 0) {
+			res.json(results);
+		} else {
+			res.status(404).json({ error: "No armor found matching the criteria" });
+		}
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server Error");
 	}
 });
 

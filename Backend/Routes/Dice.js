@@ -25,8 +25,18 @@ router.get("/:dice", (req, res) => {
 		const rolls = [];
 		for (let i = 0; i < numRolls; i++) {
 			const rollValue = rollDie(sides);
+			let criticalFail = false;
+			let criticalSuccess = false;
+
+			if (numRolls === 1) {
+				if (rollValue === 1) criticalFail = true;
+				else if (rollValue === sides) criticalSuccess = true;
+			}
+
 			rolls.push({
 				value: rollValue,
+				criticalFail: criticalFail,
+				criticalSuccess: criticalSuccess,
 			});
 		}
 

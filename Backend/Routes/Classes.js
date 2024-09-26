@@ -1,30 +1,42 @@
 const express = require("express");
 const router = express.Router();
-const classes = require("../Models/Classes");
+const Classes = require("../Models/Classes");
 
-router.get("/", (req, res) => {
-	let results = classes;
+// Get all classes or filter
+router.get("/", async (req, res) => {
+	try {
+		let query = {};
 
-	// Filter by name (case-insensitive)
-	if (req.query.name) {
-		const className =
-			req.query.name.charAt(0).toUpperCase() + req.query.name.slice(1);
-		results = results.filter(
-			(c) => c.name.toLowerCase() === className.toLowerCase()
-		);
-	}
+		// Filter by name (case-insensitive)
+		if (req.query.name) {
+			query.name = new RegExp(req.query.name, "i"); // Case-insensitive regex
+		}
 
-	// Filter by id
-	if (req.query.id) {
-		const classId = parseInt(req.query.id, 10);
-		results = results.filter((c) => c.id === classId);
-	}
+		// Filter by id
+		if (req.query.id) {
+			query._id = req.query.id;
+		}
 
-	// Check if any results found
-	if (results.length > 0) {
-		res.json(results);
-	} else {
-		res.status(404).json({ error: "No classes found matching the criteria" });
+		// Filter by hitDice
+		if (req.query.hitDice) {
+			query.hitDice = req.query.hitDice;
+		}
+
+		// Filter by primaryAbility
+		if (req.query.primaryAbility) {
+			query.primaryAbility = req.query.primaryAbility;
+		}
+
+		const results = await Classes.find(query);
+
+		if (results.length > 0) {
+			res.json(results);
+		} else {
+			res.status(404).json({ error: "No Classes found matching the criteria" });
+		}
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server Error");
 	}
 });
 
