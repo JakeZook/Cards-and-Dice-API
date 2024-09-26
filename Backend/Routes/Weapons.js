@@ -1,65 +1,37 @@
 const express = require("express");
 const router = express.Router();
-const weapons = require("../Models/Weapons");
+const Weapons = require("../Models/Weapons");
 
-router.get("/", (req, res) => {
-	let results = weapons;
+// Get all weapons or filter
+router.get("/", async (req, res) => {
+	try {
+		let query = {};
 
-	// Filter by name (case-insensitive)
-	if (req.query.name) {
-		const weaponName =
-			req.query.name.charAt(0).toUpperCase() + req.query.name.slice(1);
-		results = results.filter(
-			(w) => w.name.toLowerCase() === weaponName.toLowerCase()
-		);
-	}
+		// Filter by name (case-insensitive)
+		if (req.query.name) {
+			query.name = new RegExp(req.query.name, "i"); // Case-insensitive regex
+		}
 
-	// Filter by id
-	if (req.query.id) {
-		const weaponId = parseInt(req.query.id, 10);
-		results = results.filter((w) => w.id === weaponId);
-	}
+		// Filter by id
+		if (req.query.id) {
+			query._id = req.query.id;
+		}
 
-	// Filter by type (case-insensitive)
-	if (req.query.type) {
-		const weaponType =
-			req.query.type.charAt(0).toUpperCase() + req.query.type.slice(1);
-		results = results.filter(
-			(w) => w.type.toLowerCase() === weaponType.toLowerCase()
-		);
-	}
+		// Filter by damage type
+		if (req.query.damageType) {
+			query.damageType = req.query.damageType;
+		}
 
-	// Filter by damage type (case-insensitive)
-	if (req.query.damageType) {
-		const weaponDamageType =
-			req.query.damageType.charAt(0).toUpperCase() +
-			req.query.damageType.slice(1);
-		results = results.filter(
-			(w) => w.damageType.toLowerCase() === weaponDamageType.toLowerCase()
-		);
-	}
+		const results = await Weapons.find(query);
 
-	// Filter by modifier (case-insensitive)
-	if (req.query.modifier) {
-		const weaponModifier =
-			req.query.modifier.charAt(0).toUpperCase() + req.query.modifier.slice(1);
-		results = results.filter(
-			(w) => w.modifier.toLowerCase() === weaponModifier.toLowerCase()
-		);
-	}
-
-	// Filter by properties (case-insensitive, property may be an array)
-	if (req.query.property) {
-		const weaponProperty =
-			req.query.property.charAt(0).toUpperCase() + req.query.property.slice(1);
-		results = results.filter((w) => w.properties.includes(weaponProperty));
-	}
-
-	// Check if any results found
-	if (results.length > 0) {
-		res.json(results);
-	} else {
-		res.status(404).json({ error: "No weapons found matching the criteria" });
+		if (results.length > 0) {
+			res.json(results);
+		} else {
+			res.status(404).json({ error: "No Weapons found matching the criteria" });
+		}
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server Error");
 	}
 });
 
