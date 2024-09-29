@@ -22,6 +22,11 @@ router.get("/", async (req, res) => {
 			query.damageType = req.query.damageType;
 		}
 
+		// Filter by type
+		if (req.query.type) {
+			query.type = new RegExp(req.query.type, "i"); // Case-insensitive regex
+		}
+
 		const results = await Weapons.find(query);
 
 		if (results.length > 0) {

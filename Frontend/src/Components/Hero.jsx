@@ -19,7 +19,6 @@ const Hero = () => {
 		try {
 			const response = await fetch("http://localhost:3000/roll/d20");
 			const fetchedData = await response.json();
-			console.log(fetchedData);
 			setTempData(fetchedData[0]);
 		} catch (error) {
 			console.error("Error fetching data:", error);

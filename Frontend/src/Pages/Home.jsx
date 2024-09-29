@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-import { Hero, Classes } from "../Components";
+import { Hero, Classes, Weapons } from "../Components";
+
 const Home = () => {
 	return (
 		<div>
@@ -11,10 +12,14 @@ const Home = () => {
 					Explore the API on a quest!
 				</h1>
 				<div className="mb-12">
-					<h2 className="text-primary text-2xl text-center pb-8">
+					<h2 className="text-primary text-4xl text-center pb-16">
 						First, choose a class!
 					</h2>
 					<Classes />
+					<h2 className="text-primary text-4xl text-center pb-16 mt-16">
+						Next, you'll need a weapon!
+					</h2>
+					<Weapons />
 				</div>
 			</div>
 		</div>
