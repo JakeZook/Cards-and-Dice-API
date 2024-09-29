@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 const words = [
-	"Characters",
-	"Dice Rolls",
-	"Monsters",
-	"Weapons",
-	"Spells",
-	"Items",
-	"Skills",
-	"Classes",
-	"Armor",
+	"Characters!",
+	"Dice Rolls!",
+	"Monsters!",
+	"Weapons!",
+	"Spells!",
+	"Items!",
+	"Skills!",
+	"Classes!",
+	"Armor!",
 ];
 
 const AnimatedText = () => {
@@ -38,7 +38,7 @@ const AnimatedText = () => {
 
 	return (
 		<motion.p
-			className="text-4xl text-green-500"
+			className="text-2xl text-green-500"
 			key={currentWord}
 			initial="hidden"
 			animate={isVisible ? "visible" : "hidden"}
