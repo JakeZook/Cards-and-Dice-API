@@ -6,3 +6,4 @@ export { default as Weapons } from "./Weapons";
 export { default as Armor } from "./Armor";
 export { default as Spells } from "./Spells";
 export { default as Monsters } from "./Monsters";
+export { default as Battle } from "./Battle";

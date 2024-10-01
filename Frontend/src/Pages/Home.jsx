@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-import { Hero, Classes, Weapons, Armor, Spells, Monsters } from "../Components";
+import {
+	Hero,
+	Classes,
+	Weapons,
+	Armor,
+	Spells,
+	Monsters,
+	Battle,
+} from "../Components";
 
 const Home = () => {
 	return (
@@ -32,6 +40,10 @@ const Home = () => {
 						Oh no! A monster!
 					</h2>
 					<Monsters />
+					<h2 className="text-primary text-4xl text-center pb-16 mt-16">
+						Ready to fight?
+					</h2>
+					<Battle />
 				</div>
 			</div>
 		</div>
