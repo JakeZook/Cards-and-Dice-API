@@ -38,6 +38,10 @@ const Weapons = () => {
 		fetchWeaponsByType();
 	}, []);
 
+	useEffect(() => {
+		localStorage.setItem("weapon", JSON.stringify(weapon));
+	}, [weapon]);
+
 	return (
 		<div className="card lg:card-side bg-neutral shadow-[0_10px_60px_1px_rgba(0,0,0,0.3)] font-press-start w-[60rem] border-4 border-accent border-double shadow-accent flex items-center">
 			<div className="card-body text-primary w-[48rem]">

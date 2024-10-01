@@ -8,7 +8,10 @@ const JsonViewer = ({ json }) => {
 			<SyntaxHighlighter
 				language="json"
 				style={darcula}
-				className="overflow-auto max-h-full"
+				wrapLongLines={true}
+				wrapLines={true}
+				customStyle={{ wordBreak: "break-all" }}
+				className="overflow-auto max-h-full overflow-x-hidden"
 			>
 				{JSON.stringify(json, null, 2)}{" "}
 			</SyntaxHighlighter>

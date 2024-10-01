@@ -14,12 +14,10 @@ const Armor = () => {
 				`http://localhost:3000/armor?type=${armorType}`
 			);
 			const fetchedData = await response.json();
-			console.log("Fetched Data:", fetchedData);
 			if (fetchedData.length > 0) {
 				const randomArmor = chooseRandomArmor(fetchedData);
 				setArmor(randomArmor);
 			} else {
-				console.log("No armor found for this type.");
 				setArmor(null);
 			}
 		} catch (error) {
@@ -40,7 +38,7 @@ const Armor = () => {
 	}, []);
 
 	useEffect(() => {
-		console.log("Selected Armor:", armor);
+		localStorage.setItem("armor", JSON.stringify(armor));
 	}, [armor]);
 
 	return (
