@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 const Battle = () => {
 	const [battleStarted, setBattleStarted] = useState(false);
@@ -8,9 +9,13 @@ const Battle = () => {
 	const [spell, setSpell] = useState(null);
 	const [monster, setMonster] = useState(null);
 	const [monsterHP, setMonsterHP] = useState(null);
+	const [damage, setDamage] = useState(null);
+	const [showDamage, setShowDamage] = useState(false);
+	const [missed, setMissed] = useState(false);
 	const [currentMonsterHP, setCurrentMonsterHP] = useState(null);
 	const [healthPercentage, setHealthPercentage] = useState(null);
 	const [roll, setRoll] = useState(null);
+	const [isDead, setIsDead] = useState(false);
 
 	const handleBattleStart = () => {
 		setBattleStarted(true);
@@ -46,6 +51,33 @@ const Battle = () => {
 
 	const handleActionClick = async (dmgDice) => {
 		try {
+			setMissed(false);
+			const response = await fetch(`http://localhost:3000/roll/d20`);
+			const fetchedData = await response.json();
+			let attackRoll = fetchedData[0].results[0].value;
+
+			if (weapon.modifier === "Strength") {
+				attackRoll += pickedClass.stats.str - 10;
+			} else if (weapon.modifier === "Dexterity") {
+				attackRoll += pickedClass.stats.dex - 10;
+			}
+
+			if (pickedClass.proficiencies.includes(weapon.type)) attackRoll += 2;
+
+			if (attackRoll >= monster.ac) setMissed(false);
+			else setMissed(true);
+
+			console.log("Attack Roll:", attackRoll);
+			console.log("Monster AC:", monster.ac);
+
+			handleAttackRoll(dmgDice);
+		} catch (error) {
+			console.error("Error fetching data:", error);
+		}
+	};
+
+	const handleAttackRoll = async (dmgDice) => {
+		try {
 			const response = await fetch(`http://localhost:3000/roll/${dmgDice}`);
 			const fetchedData = await response.json();
 			setRoll(fetchedData[0]);
@@ -55,12 +87,43 @@ const Battle = () => {
 	};
 
 	const handleDoDamage = (roll) => {
-		const damage = roll.results[0].value;
-		const newHP = currentMonsterHP - damage;
+		if (missed) {
+			setDamage(0);
+			setShowDamage(true);
+
+			setTimeout(() => {
+				setShowDamage(false);
+			}, 500);
+
+			return;
+		}
+
+		const currentDamage = roll.results[0].value;
+
+		setDamage(currentDamage);
+		setShowDamage(true);
+
+		setTimeout(() => {
+			setShowDamage(false);
+		}, 500);
+
+		const newHP = currentMonsterHP - currentDamage;
 		setCurrentMonsterHP(newHP);
 
 		const healthPer = (newHP / monsterHP) * 100;
 		setHealthPercentage(healthPer);
+
+		if (newHP <= 0) {
+			setIsDead(true);
+		}
+	};
+
+	const shakeAnimation = {
+		hidden: { x: 0 },
+		visible: {
+			x: [0, -10, 10, -10, 10, 0],
+			transition: { duration: 0.5 },
+		},
 	};
 
 	useEffect(() => {
@@ -191,22 +254,44 @@ const Battle = () => {
 								<h3 className="card-title text-white text-xs pb-8 text-center justify-center">
 									AC: {monster.ac}
 								</h3>
-								<img
+								<motion.img
 									src={monster.img}
-									className="mask mask-circle max-h-64 max-w-64"
+									className={`mask mask-circle max-h-64 max-w-64 ${
+										isDead && "grayscale"
+									}`}
 									alt="Image of monster"
+									initial="hidden"
+									animate={showDamage ? "visible" : "hidden"}
+									variants={shakeAnimation}
 								/>
-								<div className="p-4 w-full max-w-md">
-									<div className="w-full bg-gray-300 rounded-full h-6 overflow-hidden">
-										<div
-											className={`h-full bg-green-500 transition-all duration-300`}
-											style={{ width: `${healthPercentage}%` }}
-										/>
+
+								{!isDead ? (
+									<div className="p-4 w-full max-w-md">
+										<div className="w-full bg-gray-300 rounded-full h-6 overflow-hidden">
+											<div
+												className={`h-full bg-green-500 transition-all duration-300`}
+												style={{ width: `${healthPercentage}%` }}
+											/>
+										</div>
+										<p className="text-xs text-center mt-4">
+											Health: {currentMonsterHP}/{monsterHP}
+										</p>
 									</div>
-									<p className="text-xs text-center mt-4">
-										Health: {currentMonsterHP}/{monsterHP}
+								) : (
+									<p className="text-xs text-center mt-4 text-error">
+										DEFEATED!
 									</p>
-								</div>
+								)}
+								<p
+									className={`text-xl transition-all duration-500 ease-out transform z-50 text-center ml-6 ${
+										showDamage ? "opacity-100 scale-110" : "opacity-0"
+									} ${damage > 0 ? "text-error" : "text-yellow-500"}`}
+									style={{
+										transform: "translateX(-50%)",
+									}}
+								>
+									{damage > 0 ? `-${damage}` : "Miss!"}
+								</p>
 							</>
 						)}
 					</div>

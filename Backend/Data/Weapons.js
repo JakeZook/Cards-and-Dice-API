@@ -98,7 +98,7 @@ const weapons = [
 	},
 	{
 		name: "Shortbow",
-		type: "Bows",
+		type: "Bow",
 		maxDmg: 6,
 		minDmg: 1,
 		damageType: "Piercing",
@@ -115,7 +115,7 @@ const weapons = [
 	},
 	{
 		name: "Longbow",
-		type: "Bows",
+		type: "Bow",
 		maxDmg: 10,
 		minDmg: 1,
 		damageType: "Piercing",
@@ -138,7 +138,7 @@ const weapons = [
 	},
 	{
 		name: "Crossbow",
-		type: "Crossbows",
+		type: "Crossbow",
 		maxDmg: 10,
 		minDmg: 1,
 		damageType: "Piercing",
@@ -434,7 +434,7 @@ const weapons = [
 	},
 	{
 		name: "Quarterstaff",
-		type: "Quarterstaffs",
+		type: "Quarterstaff",
 		maxDmg: 6,
 		minDmg: 1,
 		damageType: "Bludgeoning",
